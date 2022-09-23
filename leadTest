@@ -1,0 +1,106 @@
+@isTest
+public class LeadTriggerTest {
+    @isTest
+    public static void NewStatus(){
+        List <Lead> newLead = new List <Lead>();
+        newLead.add (New Lead (
+            lastName = 'abacate',
+            cnpj__c='23.484.760/0001-17',
+            status ='Novo',
+            ProductInterest__c='Viva',
+            Company = 'empresa',
+            Description = 'contato a tarde',
+            email = 'email@gmail.com'));
+        
+        newLead.add (New Lead (
+            lastName = 'abacaxi',
+            cnpj__c = '88.169.306/0001-17',
+            status ='Novo',
+            ProductInterest__c='Viva',
+            Company = 'empresa',
+            Description = 'contato a tarde',
+            email = 'email8@gmail.com')); 
+        
+        insert newLead;
+        
+        List<Lead>leads=[Select id, lastName from Lead];
+        System.assert(leads.size()>0);
+        
+        newLead[0].Status='Contactado';
+        newLead[1].Status='Contactado';
+        
+        update newLead;
+        
+        List<Account> acc = [SELECT id, name from Account ];
+        System.assert(acc.size()>0);
+    }   
+@isTest
+    public static void NewTasks(){
+        List <Lead> newLead = new List <Lead>();
+        newLead.add (New Lead (
+            lastName = 'goiaba',
+            cnpj__c='23.484.760/0001-17',
+            status ='Contactado',
+            ProductInterest__c='Viva',
+            Company = 'empresa',
+            Description = 'contato a tarde',
+            email = 'email@gmail.com'));
+        
+        newLead.add (New Lead (
+            lastName = 'kiwi',
+            cnpj__c = '88.169.306/0001-17',
+            status ='Contactado',
+            ProductInterest__c='Viva',
+            Company = 'empresa',
+            Description = 'contato a tarde',
+            email = 'email@gmail.com')); 
+        
+        insert newLead;
+        
+        List<Lead>leads=[Select id, lastName from Lead];
+        System.assert(leads.size()>0);        
+        
+        newLead[0].Status='Negociação';
+        newLead[1].Status='Negociação';
+        
+        update newLead;
+        
+        List<Task> tasks = [SELECT id, whoid from Task ];
+        System.assert(tasks.size()>0);
+    }    
+    
+    @isTest
+    public static void TestCountry(){
+        lead ld4 = new lead(
+            lastName='maçã',
+            company='empresa',
+            CPF__c='460.701.270-05',
+            cnpj__c='03.478.539/0001-49',
+            country='Brasil',
+            status='Novo',
+            ProductInterest__c='Viva',
+            email='sarahd8.srdo@gmail.com');
+        
+        insert ld4;
+        
+        Lead newlead =[SELECT Status FROM Lead WHERE Id =: ld4.Id];
+        System.assertEquals('Novo',ld4.status,'O país é Brasil');       
+        
+        
+        lead ld5 = new lead(
+            lastName='pera',
+            company='empresa',
+            status='Desqualificado',
+            CPF__c='273.028.450-85',
+            cnpj__c='97.692.650/0001-87',
+            country='Argentina',
+            ProductInterest__c='Viva',
+            email='sarahd8.srdo@gmail.com');
+        
+        insert ld5;
+        
+        Lead newlead2 =[SELECT Status FROM Lead WHERE Id =: ld5.Id];
+        System.assertEquals('Desqualificado',ld5.status,'O país não é Brasil');       
+        
+    }
+}
