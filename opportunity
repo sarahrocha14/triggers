@@ -1,0 +1,46 @@
+trigger TriggerOportunidade01 on Opportunity (before insert, before update, after insert, after update) {
+    if (Trigger.isBefore && Trigger.isInsert){
+        for(Opportunity opp: Trigger.new){
+            if(opp.CatalogoPrecos__c == null){
+                opp.AddError('É preciso cadastrar ao menos um produto de interesse!'); 
+            }
+        }
+    }
+    if(Trigger.isBefore && Trigger.isUpdate){
+        for(Opportunity oldOpp: Trigger.old){
+            for (Opportunity newOpp: Trigger.new){
+                if (Trigger.oldMap.get(newOpp.id).StageName=='Negócio Fechado'){
+                    newOpp.AddError('Fase Negócio Fechado não pode ser alterado');
+                } if(Trigger.oldMap.get(newOpp.id).StageName=='Perdida'){
+                    newOpp.AddError('Fase Perdida não pode ser alterada');                
+                }
+            }
+            
+        }           
+        if (Trigger.isInsert || Trigger.isUpdate){
+            if(Trigger.IsBefore){
+                for(Opportunity opp:trigger.new){
+                    if(opp.stagename=='Perdida'&&opp.motivo__c==null){
+                        opp.addError('O motivo deve ser preenchido');
+                    }
+                }
+            }
+        } 	
+        
+    }
+    if (Trigger.isInsert || Trigger.isUpdate){
+        if(Trigger.IsAfter){
+            for (Opportunity opp: Trigger.new){
+                if (opp.StageName == 'Negociação' && opp.Amount > 79.000){
+                    Approval.ProcessSubmitRequest submitRequest = new Approval.ProcessSubmitRequest( );
+                    submitRequest.setObjectId(opp.Id);
+                    submitRequest.setProcessDefinitionNameOrId('AprovacaoGerente');
+                    submitRequest.setSubmitterId(UserInfo.getUserId());
+                    Approval.ProcessResult result = Approval.process(submitRequest);	
+                    
+                } 
+            }
+            
+        }
+    }
+}
