@@ -1,0 +1,63 @@
+@isTest
+public class Teste1TriggerOportunidade01 {
+    @isTest
+    public static void TestOpp1() {
+        List<Opportunity> opp1 = new List<Opportunity>();
+        //criando os campos a serem adicionados
+        opp1.add(new Opportunity(
+            Name='Fulano1',
+            CloseDate=Date.today() + 10,
+            StageName='Negócio Fechado',
+            LeadSource='Site',
+            CatalogoPrecos__c='01s8V000002hOuHQAU'
+        ));
+        opp1.add(new Opportunity(
+            Name='Fulano2',
+            CloseDate=Date.newInstance(2022,08,17),
+            StageName='Perdida',
+            LeadSource='Site',
+            CatalogoPrecos__c='01s8V000002hOuHQAU'
+        ));
+        insert opp1;
+        //verificar se as duas oportunidades foram inseridas
+        List<Opportunity> OPP = [SELECT Id,Name FROM Opportunity];
+        System.assertEquals(2, OPP.size());
+        //seleciona e faz update das oportunidades
+        opp1[0].StageName = 'Nova Oportunidade';
+        opp1[1].StageName = 'Nova Oportunidade';
+        //atualiza os dados 
+        update OPP;
+        //verifica se a Fase foi alterada
+        List<Opportunity> oportu = [SELECT Id,StageName From Opportunity ];
+        System.assertEquals(0, oportu.size());
+    }
+    
+    @isTest
+    public static void receita(){
+        Opportunity opp = new Opportunity(
+            Name='Teste Produto',
+            CloseDate= Date.today() + 10,
+            StageName='Nova Oportunidade',
+            LeadSource='Site'
+        );
+        
+        insert Opp;
+        Opportunity newOpp = [SELECT StageName FROM Opportunity WHERE Id =: opp.Id];
+        System.assertEquals('É preciso cadastrar ao menos um produto de interesse!', opp.CatalogoPrecos__c);
+    }
+    @isTest
+    public static void Aprovacao(){
+        Opportunity opp = new Opportunity(
+            Name='Teste Gerente',
+            CloseDate= Date.today() + 10,
+            StageName='Negociação',
+            Amount=100000,
+            LeadSource='Site',
+            CatalogoPrecos__c='01s8V000002hOuHQAU'
+        );
+        
+        insert Opp;
+        Opportunity newOpp = [SELECT StageName FROM Opportunity WHERE Id =: opp.Id];
+        System.assertEquals('Negociação', opp.StageName);
+    }
+}
