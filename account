@@ -1,0 +1,17 @@
+trigger AccountTrigger on Account (before insert, before update) {
+    if (Trigger.isInsert || Trigger.isUpdate){
+        if(Trigger.IsBefore){
+            for(Account account: Trigger.New){              
+                if(account.Description == null){
+                    Account.addError('Campo Descrição deve ser preenchido');
+                }if(( account.cnpj__c != null || account.cpf__c != null) && account.phone == null && account.Celular__c== null){
+                    account.Rating= 'Cadastro Fraco';
+                }else if((account.cnpj__c != null || account.cpf__c != null) && account.phone != null && account.Celular__c!= null){                
+                    account.Rating='Cadastro Bom';
+                }else if((account.cnpj__c != null || account.cpf__c != null) && (account.phone == null || account.Celular__c == null)){
+                    account.Rating='Cadastro Moderado';
+                } 
+            }
+        }
+    }
+}
