@@ -1,0 +1,61 @@
+trigger LeadTrigger on Lead (before insert, before update, after insert, after update) {
+    
+    if (Trigger.isAfter && Trigger.isUpdate){    
+        List<Account> listAccount = new List <Account>();
+        for (Lead ld3 : Trigger.new){
+            if(ld3.Status == 'Contactado' && trigger.oldMap.get(ld3.id).Status == 'Novo'){
+                account acc = new account();
+                acc.Name=ld3.Lastname;
+                acc.Description=ld3.Description;
+                acc.cpf__c=ld3.CPF__c;
+                acc.CNPJ__c=ld3.CNPJ__c;
+                acc.phone=ld3.Phone;
+                acc.Celular__c=ld3.MobilePhone;
+                
+                listAccount.add(acc);
+                
+            }
+            
+            insert listAccount;
+        }
+    }
+    
+    
+    if(Trigger.isAfter && Trigger.isUpdate){
+        List<Task> NewTasks = new List <Task>();
+        for (Lead ld3 : Trigger.new){
+            if(ld3.Status == 'Negociação' && trigger.oldMap.get(ld3.id).Status == 'Contactado'){
+                Task tarefa = new Task(
+                    Subject='Tentar a conversão nos próximos 5 dias',
+                    ActivityDate= date.today()+5,
+                    WhoId=ld3.id);
+                
+                NewTasks.add(tarefa);
+            }
+        }
+        insert NewTasks;
+    }
+    
+    if(Trigger.isAfter && Trigger.isInsert){
+        List<Messaging.SingleEmailMessage> emailList= new List<Messaging.SingleEmailMessage>();
+        EmailTemplate emailTemplate = [ Select Id,Subject, Description, HtmlValue, DeveloperName,Body from EmailTemplate where name='leadDesqualificado'];
+        for (Lead ld: Trigger.new){
+            if (ld.country != 'Brasil'){
+                Messaging.SingleEmailMessage mail= new Messaging.SingleEmailMessage();
+                mail.setTargetObjectId(ld.id);
+                mail.setSenderDisplayName('Marfrig Global Food');
+                mail.setTemplateID(emailTemplate.Id);
+                emailList.add(mail);            
+            }
+        }  Messaging.sendEmail(emailList);
+    }
+    if(Trigger.isBefore && Trigger.isInsert){
+        for (lead ld2: trigger.new){
+            if (ld2.country != 'Brasil'){
+                ld2.Status = 'Desqualificado';
+            }if (ld2.country == 'Brasil' || ld2.country == 'BR'|| ld2.country == null || ld2.country == 'Brazil' ){
+                ld2.Status='Novo';
+            }
+        }
+    }
+}
