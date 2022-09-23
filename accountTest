@@ -1,0 +1,45 @@
+@isTest
+public class AccountTriggerTest {
+    @isTest
+    public static void TestDescription(){
+        Account acc = new Account();
+        acc.Name = 'empresa';
+        acc.CNPJ__c='99.110.381/0001-29';
+        insert acc;
+        
+        System.assertEquals(null,acc.Description,'Teste Descrição');
+    } 
+    @isTest
+    public static void TestBom(){
+        Account acc = new Account();
+        acc.Description = 'teste';
+        acc.Name = 'empresa';
+        acc.phone='12345';
+        acc.Celular__c='98765';
+        acc.Rating='Cadastro Bom';
+        acc.cpf__c='54233607491';
+        insert acc;
+        System.assertEquals('Cadastro Bom',acc.rating, 'Cadastro realizado' );
+    } 
+    @isTest
+    public static void TestModerado(){
+        Account acc = new Account();
+        acc.Description = 'teste';
+        acc.Name = 'empresa';
+        acc.phone='12345';
+        acc.rating='Cadastro Moderado';
+        acc.cpf__c='240.730.832-87';
+        insert acc;
+        System.assertEquals('Cadastro Moderado',acc.rating,'Cadastro moderado entrou' );
+    }
+    @isTest
+    public static void TestFraco(){
+        Account acc = new Account();
+        acc.Description = 'teste';
+        acc.Name = 'empresa';
+        acc.Rating='Cadastro Fraco';
+        acc.cpf__c='383.955.413-68';
+        insert acc;
+        System.assertEquals('Cadastro Fraco',acc.rating, 'cadastro fraco entrou' );
+    }
+}
